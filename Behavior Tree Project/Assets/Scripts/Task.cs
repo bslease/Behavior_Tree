@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Timers;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,7 +14,7 @@ public abstract class Task
     public event EventHandler<EventArgs> TaskFinished;
     protected virtual void OnTaskFinished(EventArgs e)
     {
-        Debug.Log("task finished");
+        Debug.Log("task finished at " + Time.deltaTime);
         TaskFinished?.Invoke(this, e);
     }
 }
@@ -46,6 +47,7 @@ public class Sequence : Task
 
     public override bool run()
     {
+        Debug.Log("currentIndex = " + currentIndex + " children.Count = " + children.Count);
         while (currentIndex < children.Count)
         {
             Task currentTask = children[currentIndex];
@@ -56,15 +58,19 @@ public class Sequence : Task
             currentIndex++;
             if (currentTask.waitForCallback)
             {
+                Debug.Log("setting up callback for task " + currentTask);
                 currentTask.TaskFinished += HandleTaskFinished;
                 break;
             }
         }
+
+        // the problem is here... need to keep a list and only return true when all children finish succesfully
         return true;
     }
 
     void HandleTaskFinished(object sender, EventArgs e)
     {
+        Debug.Log("sequence execution continuing at currentIndex " + currentIndex);
         this.run();
     }
 }
@@ -169,10 +175,37 @@ public class MoveKinematicToObject : Task
 
     public void MoverArrived()
     {
-        Debug.Log("it arrived");
+        mMover.OnArrived -= MoverArrived;
+        Debug.Log("arrived at " + mTarget);
         OnTaskFinished(EventArgs.Empty);
     }
 
+}
+
+public class Pause : Task
+{
+    Timer myTimer;
+
+    public Pause(float time)
+    {
+        myTimer = new Timer(time);
+        myTimer.Elapsed += OnTimeElapsed;
+        waitForCallback = true;
+    }
+
+    public override bool run()
+    {
+        myTimer.Enabled = true;
+        return true;
+    }
+
+    void OnTimeElapsed(object source, ElapsedEventArgs e)
+    {
+        //myTimer.Enabled = false;
+        myTimer.Stop();
+        Debug.Log("Pause time elapsed.");
+        OnTaskFinished(EventArgs.Empty);
+    }
 }
 
 public class BargeDoor : Task

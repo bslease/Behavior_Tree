@@ -6,6 +6,7 @@ public class BruceBanner : MonoBehaviour
 {
     public Door theDoor;
     public GameObject theTreasure;
+    public GameObject test;
 
     // Start is called before the first frame update
     void Start()
@@ -16,8 +17,10 @@ public class BruceBanner : MonoBehaviour
         // if door isn't locked, open it
         List<Task> taskList = new List<Task>();
         Task isDoorNotLocked = new IsFalse(theDoor.isLocked);
+        //Task waitABeat = new Pause(0.5f);
         Task openDoor = new OpenDoor(theDoor);
         taskList.Add(isDoorNotLocked);
+        //taskList.Add(waitABeat);
         taskList.Add(openDoor);
         Sequence openUnlockedDoor = new Sequence(taskList);
 
@@ -28,6 +31,7 @@ public class BruceBanner : MonoBehaviour
         Task hulkOut = new HulkOut(this.gameObject);
         Task bargeDoor = new BargeDoor(theDoor.transform.GetChild(0).GetComponent<Rigidbody>());
         taskList.Add(isDoorClosed);
+        //taskList.Add(waitABeat);
         taskList.Add(hulkOut);
         taskList.Add(bargeDoor);
         Sequence bargeClosedDoor = new Sequence(taskList);
@@ -44,7 +48,10 @@ public class BruceBanner : MonoBehaviour
         taskList = new List<Task>();
         Task moveToDoor = new MoveKinematicToObject(this.GetComponent<Kinematic>(), theDoor.gameObject);
         Task moveToTreasure = new MoveKinematicToObject(this.GetComponent<Kinematic>(), theTreasure.gameObject);
+        //Task moveToTest = new MoveKinematicToObject(this.GetComponent<Kinematic>(), test.gameObject);
         taskList.Add(moveToDoor);
+        //taskList.Add(moveToTest);
+        //taskList.Add(waitABeat);
         taskList.Add(openTheDoor); // one way or another
         taskList.Add(moveToTreasure);
         Sequence getTreasureBehindClosedDoor = new Sequence(taskList);
@@ -54,6 +61,7 @@ public class BruceBanner : MonoBehaviour
         taskList = new List<Task>();
         Task isDoorOpen = new IsTrue(theDoor.isOpen);
         taskList.Add(isDoorOpen);
+        //taskList.Add(moveToTest);
         taskList.Add(moveToTreasure);
         Sequence getTreasureBehindOpenDoor = new Sequence(taskList);
 
@@ -67,23 +75,23 @@ public class BruceBanner : MonoBehaviour
         getTreasure.run();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
+    //// Update is called once per frame
+    //void Update()
+    //{
         
-    }
+    //}
 
-    public void RunSequenceWithDelay(List<Task> taskList)
-    {
-        StartCoroutine(delayMe(taskList));
-    }
+    //public void RunSequenceWithDelay(List<Task> taskList)
+    //{
+    //    StartCoroutine(delayMe(taskList));
+    //}
 
-    IEnumerator delayMe(List<Task> taskList)
-    {
-        foreach (Task t in taskList)
-        {
-            t.run();
-            yield return new WaitForSeconds(3);
-        }
-    }
+    //IEnumerator delayMe(List<Task> taskList)
+    //{
+    //    foreach (Task t in taskList)
+    //    {
+    //        t.run();
+    //        yield return new WaitForSeconds(3);
+    //    }
+    //}
 }
