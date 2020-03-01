@@ -34,6 +34,7 @@ public class Door : MonoBehaviour
         if (!isOpen && !isLocked)
         {
             isOpen = true;
+            transform.eulerAngles = openRotation;
             Debug.Log("door is now open");
             return true;
         }

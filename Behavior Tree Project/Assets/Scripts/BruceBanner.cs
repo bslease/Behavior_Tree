@@ -42,8 +42,8 @@ public class BruceBanner : MonoBehaviour
         // get the treasure when the door is closed
         //taskList.Clear();
         taskList = new List<Task>();
-        Task moveToDoor = new MoveTo(theDoor.transform.position);
-        Task moveToTreasure = new MoveTo(theTreasure.transform.position);
+        Task moveToDoor = new MoveKinematicToObject(this.GetComponent<Kinematic>(), theDoor.gameObject);
+        Task moveToTreasure = new MoveKinematicToObject(this.GetComponent<Kinematic>(), theTreasure.gameObject);
         taskList.Add(moveToDoor);
         taskList.Add(openTheDoor); // one way or another
         taskList.Add(moveToTreasure);
@@ -71,5 +71,19 @@ public class BruceBanner : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void RunSequenceWithDelay(List<Task> taskList)
+    {
+        StartCoroutine(delayMe(taskList));
+    }
+
+    IEnumerator delayMe(List<Task> taskList)
+    {
+        foreach (Task t in taskList)
+        {
+            t.run();
+            yield return new WaitForSeconds(3);
+        }
     }
 }

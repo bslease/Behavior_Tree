@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,11 +7,21 @@ public abstract class Task
 {
     // Return on success (true) or failure (false)
     public abstract bool run();
+    public bool waitForCallback = false;
+    //public delegate void TaskFinished();
+    //public event TaskFinished OnTaskFinished;
+    public event EventHandler<EventArgs> TaskFinished;
+    protected virtual void OnTaskFinished(EventArgs e)
+    {
+        Debug.Log("task finished");
+        TaskFinished?.Invoke(this, e);
+    }
 }
 
 public class Sequence : Task
 {
     List<Task> children;
+    int currentIndex = 0;
 
     public Sequence(List<Task> taskList)
     {
@@ -21,17 +32,40 @@ public class Sequence : Task
     // try all tasks in order
     // stop and return false on the first task that fails
     // return true if all tasks succeed
+    //public override bool run()
+    //{
+    //    foreach (Task c in children)
+    //    {
+    //        if (!c.run())
+    //        {
+    //            return false;
+    //        }
+    //    }
+    //    return true;
+    //}
+
     public override bool run()
     {
-
-        foreach (Task c in children)
+        while (currentIndex < children.Count)
         {
-            if (!c.run())
+            Task currentTask = children[currentIndex];
+            if (!currentTask.run())
             {
                 return false;
             }
+            currentIndex++;
+            if (currentTask.waitForCallback)
+            {
+                currentTask.TaskFinished += HandleTaskFinished;
+                break;
+            }
         }
         return true;
+    }
+
+    void HandleTaskFinished(object sender, EventArgs e)
+    {
+        this.run();
     }
 }
 
@@ -113,20 +147,32 @@ public class IsFalse : Task
     }
 }
 
-public class MoveTo : Task
+public class MoveKinematicToObject : Task
 {
-    Vector3 targetPosition;
+    Arriver mMover;
+    GameObject mTarget;
 
-    public MoveTo(Vector3 somePosition)
+    public MoveKinematicToObject(Kinematic mover, GameObject target)
     {
-        targetPosition = somePosition;
+        mMover = mover as Arriver;
+        mTarget = target;
+        waitForCallback = true;
     }
 
     public override bool run()
     {
-        Debug.Log("Moving to target position: " + targetPosition);
+        mMover.OnArrived += MoverArrived;
+        mMover.myTarget = mTarget;
+        Debug.Log("Moving to target position: " + mTarget);
         return true;
     }
+
+    public void MoverArrived()
+    {
+        Debug.Log("it arrived");
+        OnTaskFinished(EventArgs.Empty);
+    }
+
 }
 
 public class BargeDoor : Task
@@ -141,7 +187,6 @@ public class BargeDoor : Task
     public override bool run()
     {
         Debug.Log("barging door");
-        //mDoor.AddExplosionForce(10f, mDoor.transform.position, 5f);
         mDoor.AddForce(-10f, 0, 0, ForceMode.VelocityChange);
         return true;
     }
@@ -173,6 +218,7 @@ public class HulkOut : Task
 
     public override bool run()
     {
+        mEntity.transform.localScale *= 2;
         mEntity.GetComponent<Renderer>().material.SetColor("_Color", Color.green);
         return true;
     }
