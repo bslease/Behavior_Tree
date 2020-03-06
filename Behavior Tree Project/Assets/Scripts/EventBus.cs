@@ -6,7 +6,7 @@ using UnityEngine.Events;
 public class EventBus : Singleton<EventBus>
 {
     private Dictionary<string, UnityEvent> m_EventDictionary;
-    private static int nextEventID = 17; // start at an arbitrary non-zero int
+    private static int nextEventID = 1; // non-zero seems best
 
     public override void Awake()
     {
@@ -56,14 +56,20 @@ public class EventBus : Singleton<EventBus>
         UnityEvent thisEvent = null;
         if (Instance.m_EventDictionary.TryGetValue(eventName, out thisEvent))
         {
-            Debug.Log("Triggering " + eventName);
+            //Debug.Log("Triggering " + eventName);
             thisEvent.Invoke();
         }
     }
 
     public static void ScheduleTrigger(string eventName, float secondsFromNow)
     {
+        // because this is a static function, we can't do the following:
+        //StartCoroutine(DelayTrigger(eventName, secondsFromNow));
+        // we need an instance of an object to run coroutines on, like so:
         EventBus.Instance.StartCoroutine(EventBus.Instance.DelayTrigger(eventName, secondsFromNow));
+
+        // NOTE: this is a case where a singleton is a better solution than a simple static class
+        // we wouldn't be able to run coroutines here if our event bus was just a static class
     }
 
     IEnumerator DelayTrigger(string eventName, float delayTime)

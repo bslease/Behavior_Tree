@@ -18,74 +18,19 @@ public class BruceBanner : MonoBehaviour
             if (!executingBehavior)
             {
                 executingBehavior = true;
-                //myCurrentTask = BuildTask_Test();
                 myCurrentTask = BuildTask_GetTreasue();
 
-                myCurrentTask.eventId = EventBus.GetEventID();
-                EventBus.StartListening("FinishedTask" + myCurrentTask.eventId, OnTaskFinished);
+                EventBus.StartListening(myCurrentTask.TaskFinished, OnTaskFinished);
                 myCurrentTask.run();
             }
-        }
-        
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            Debug.Log("Help");
         }
     }
 
     void OnTaskFinished()
     {
-        EventBus.StopListening("FinishedTask" + myCurrentTask.eventId, OnTaskFinished);
-        Debug.Log("Behavior complete! Success = " + myCurrentTask.succeeded);
+        EventBus.StopListening(myCurrentTask.TaskFinished, OnTaskFinished);
+        //Debug.Log("Behavior complete! Success = " + myCurrentTask.succeeded);
         executingBehavior = false;
-    }
-
-    Task BuildTask_Test()
-    {
-        List<Task> taskList = new List<Task>();
-
-        // get the treasure when the door is open 
-        taskList = new List<Task>();
-        Task isDoorOpen = new IsFalse(theDoor.isClosed);
-        Task moveToTreasure = new MoveKinematicToObject(this.GetComponent<Kinematic>(), theTreasure.gameObject);
-        taskList.Add(isDoorOpen);
-        taskList.Add(moveToTreasure);
-        Sequence getTreasureBehindOpenDoor = new Sequence(taskList);
-
-        //taskList = new List<Task>();
-        Task moveToDoor = new MoveKinematicToObject(this.GetComponent<Kinematic>(), theDoor.gameObject);
-        //Task openDoor = new OpenDoor(theDoor);
-        //Task waitABeat = new Pause(0.5f);
-        Task waitABeat = new Wait(1.5f);
-        //taskList.Add(moveToDoor);
-        //taskList.Add(openDoor);
-        //taskList.Add(waitABeat);
-        //taskList.Add(moveToTreasure);
-        //Sequence getTreasureBehindOClosedDoor = new Sequence(taskList);
-        //return getTreasureBehindOClosedDoor;
-
-        taskList = new List<Task>();
-        Task isDoorClosed = new IsTrue(theDoor.isClosed);
-        Task hulkOut = new HulkOut(this.gameObject);
-        Task bargeDoor = new BargeDoor(theDoor.transform.GetChild(0).GetComponent<Rigidbody>());
-        taskList.Add(isDoorClosed);
-        taskList.Add(moveToDoor);
-        taskList.Add(hulkOut);
-        taskList.Add(waitABeat);
-        taskList.Add(bargeDoor);
-        taskList.Add(waitABeat);
-        taskList.Add(moveToTreasure);
-        Sequence bargeClosedDoor = new Sequence(taskList);
-        return bargeClosedDoor;
-
-        /*
-        // open a closed door, or don't
-        taskList = new List<Task>();
-        taskList.Add(getTreasureBehindOpenDoor);
-        taskList.Add(getTreasureBehindOClosedDoor);
-        taskList.Add(bargeClosedDoor);
-        Selector getTreasure = new Selector(taskList);
-        */
     }
     
     Task BuildTask_GetTreasue()

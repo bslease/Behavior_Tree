@@ -558,7 +558,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6f6e5014e066de47bcc140bf8461f3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isOpen: 1
+  isClosed: 0
   isLocked: 0
 --- !u!4 &1183386155
 Transform:
