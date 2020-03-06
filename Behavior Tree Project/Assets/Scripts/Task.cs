@@ -134,6 +134,24 @@ public class Pause : Task
     }
 }
 
+public class Wait : Task
+{
+    float mTimeToWait;
+
+    public Wait(float time)
+    {
+        mTimeToWait = time;
+    }
+
+    public override void run()
+    {
+        succeeded = true;
+        // where does eventid get set? TODO <- move this to the task itself and out of the seq, selector and root
+        // can i use instance in static function on event bus?
+        EventBus.Instance.ScheduleTrigger("FinishedTask" + eventId, mTimeToWait);
+    }
+}
+
 public class MoveKinematicToObject : Task
 {
     Arriver mMover;

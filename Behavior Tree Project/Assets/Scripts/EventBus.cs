@@ -60,4 +60,15 @@ public class EventBus : Singleton<EventBus>
             thisEvent.Invoke();
         }
     }
+
+    public void ScheduleTrigger(string eventName, float secondsFromNow)
+    {
+        StartCoroutine(DelayTrigger(eventName, secondsFromNow));
+    }
+
+    IEnumerator DelayTrigger(string eventName, float delayTime)
+    {
+        yield return new WaitForSeconds(delayTime);
+        TriggerEvent(eventName);
+    }
 }
