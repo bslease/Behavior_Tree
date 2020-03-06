@@ -61,9 +61,9 @@ public class EventBus : Singleton<EventBus>
         }
     }
 
-    public void ScheduleTrigger(string eventName, float secondsFromNow)
+    public static void ScheduleTrigger(string eventName, float secondsFromNow)
     {
-        StartCoroutine(DelayTrigger(eventName, secondsFromNow));
+        EventBus.Instance.StartCoroutine(EventBus.Instance.DelayTrigger(eventName, secondsFromNow));
     }
 
     IEnumerator DelayTrigger(string eventName, float delayTime)

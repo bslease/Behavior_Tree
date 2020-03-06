@@ -105,6 +105,7 @@ public class HulkOut : Task
     }
 }
 
+/*
 // for some reason, this task will break if used before barge, hulk out, or open door
 // it works okay before a moveto or an isfalse
 public class Pause : Task
@@ -133,6 +134,7 @@ public class Pause : Task
         EventBus.TriggerEvent("FinishedTask" + eventId);
     }
 }
+*/
 
 public class Wait : Task
 {
@@ -146,9 +148,7 @@ public class Wait : Task
     public override void run()
     {
         succeeded = true;
-        // where does eventid get set? TODO <- move this to the task itself and out of the seq, selector and root
-        // can i use instance in static function on event bus?
-        EventBus.Instance.ScheduleTrigger("FinishedTask" + eventId, mTimeToWait);
+        EventBus.ScheduleTrigger("FinishedTask" + eventId, mTimeToWait);
     }
 }
 

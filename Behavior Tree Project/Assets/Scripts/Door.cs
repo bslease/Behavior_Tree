@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Door : MonoBehaviour
 {
-    public bool isOpen = true;
+    public bool isClosed = false;
     public bool isLocked = false;
 
     Vector3 closedRotation = new Vector3(0, 0, 0);
@@ -13,42 +13,37 @@ public class Door : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (isOpen)
-        {
-            transform.eulerAngles = openRotation;
-        }
-        else
+        if (isClosed)
         {
             transform.eulerAngles = closedRotation;
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        else
+        {
+            transform.eulerAngles = openRotation;
+        }
     }
 
     public bool Open()
     {
-        if (!isOpen && !isLocked)
+        if (isClosed && !isLocked)
         {
-            isOpen = true;
+            //Debug.Log("door is now open");
+            isClosed = false;
             transform.eulerAngles = openRotation;
-            Debug.Log("door is now open");
             return true;
         }
 
-        Debug.Log("door was either locked or already open");
+        //Debug.Log("door was either locked or already open");
         return false;
     }
 
     public bool Close()
     {
-        if (isOpen)
+        if (!isClosed)
         {
-            isOpen = false;
-            Debug.Log("door is now closed");
+            //Debug.Log("door is now closed");
+            transform.eulerAngles = closedRotation;
+            isClosed = true;
         }
         return true;
     }

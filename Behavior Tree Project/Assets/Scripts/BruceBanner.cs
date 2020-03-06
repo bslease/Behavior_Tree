@@ -46,7 +46,7 @@ public class BruceBanner : MonoBehaviour
 
         // get the treasure when the door is open 
         taskList = new List<Task>();
-        Task isDoorOpen = new IsTrue(theDoor.isOpen);
+        Task isDoorOpen = new IsFalse(theDoor.isClosed);
         Task moveToTreasure = new MoveKinematicToObject(this.GetComponent<Kinematic>(), theTreasure.gameObject);
         taskList.Add(isDoorOpen);
         taskList.Add(moveToTreasure);
@@ -65,7 +65,7 @@ public class BruceBanner : MonoBehaviour
         //return getTreasureBehindOClosedDoor;
 
         taskList = new List<Task>();
-        Task isDoorClosed = new IsFalse(theDoor.isOpen);
+        Task isDoorClosed = new IsTrue(theDoor.isClosed);
         Task hulkOut = new HulkOut(this.gameObject);
         Task bargeDoor = new BargeDoor(theDoor.transform.GetChild(0).GetComponent<Rigidbody>());
         taskList.Add(isDoorClosed);
@@ -105,7 +105,7 @@ public class BruceBanner : MonoBehaviour
 
         // barge a closed door
         taskList = new List<Task>();
-        Task isDoorClosed = new IsFalse(theDoor.isOpen);
+        Task isDoorClosed = new IsTrue(theDoor.isClosed);
         Task hulkOut = new HulkOut(this.gameObject);
         Task bargeDoor = new BargeDoor(theDoor.transform.GetChild(0).GetComponent<Rigidbody>());
         taskList.Add(isDoorClosed);
@@ -134,7 +134,7 @@ public class BruceBanner : MonoBehaviour
 
         // get the treasure when the door is open 
         taskList = new List<Task>();
-        Task isDoorOpen = new IsTrue(theDoor.isOpen);
+        Task isDoorOpen = new IsFalse(theDoor.isClosed);
         taskList.Add(isDoorOpen);
         taskList.Add(moveToTreasure);
         Sequence getTreasureBehindOpenDoor = new Sequence(taskList);
